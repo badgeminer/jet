@@ -32,6 +32,7 @@ content=[[" "for y in range(uisz[1])] for x in range(uisz[0])]
 cbg = [[15 for y in range(uisz[1])] for x in range(uisz[0])]
 cfg = [[0 for y in range(uisz[1])] for x in range(uisz[0])]
 
+curp = [0,0]
 
 while True:
     scr.fill((0,0,0))
@@ -40,6 +41,7 @@ while True:
             cpos = ((x)*fsz[0],(y+1)*fsz[1])
             tx = font.render(i,True,colors[cfg[x][y]],colors[cbg[x][y]])
             scr.blit(tx,cpos)
+    cpos = ((x)*fsz[0],(y+1)*fsz[1])
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             sys.exit()
