@@ -1,11 +1,12 @@
-import pygame,sys,enum
+import pygame,sys,enum,build,elements
 pygame.init()
 
 font  = pygame.font.Font("SpaceMono-Regular.ttf",15)
 
 fsz = font.size("E")
+elements.fsz = fsz
 uisz =(51,19)
-sz = ((uisz[0]+1)*fsz[0],(uisz[1]+1)*fsz[1])
+sz = ((uisz[0])*fsz[0],(uisz[1])*fsz[1])
 print(sz)
 scr = pygame.display.set_mode(sz)
 
@@ -13,6 +14,13 @@ class mode(enum.IntEnum):
     text=1
     fg=2
     bg=3
+    define = 4
+    build=5
+class UImode(enum.IntEnum):
+    text=1
+    fg=2
+    bg=3
+
 
 colors = [
     (240, 240, 240),
@@ -33,72 +41,84 @@ colors = [
     (17, 17, 17)
 ]
 
-content=[[" "for y in range(uisz[1])] for x in range(uisz[0])]
-cbg = [[15 for y in range(uisz[1])] for x in range(uisz[0])]
-cfg = [[0 for y in range(uisz[1])] for x in range(uisz[0])]
-UI=["T","F","B"," ","#"]
-ufg = [5,1,2,15,5]
+content:list[elements.element]=[]
 
-curp = [0,0]
-ccol = 5
-md = mode.text
-def posWrap(xy,mx,my=0):
-    x,y=xy
-    x+=mx
-    y+=my
-    if x>=uisz[0]:
-        x=0
-        y += 1
-    if x<0:
-        x=uisz[0]-1
-        y -= 1
-    if y>=uisz[1]:
-        y=0
-    return x,y
-def returnLn(xy):
-    x,y=xy
-    x=0
-    y+=1
-    
-    return posWrap((x,y),0)
-def fgbg(col,id):
-    if md == id+1:
-        return (255,255,255),col
-    return col,(100,100,100)
-def setCol(colN):
-    ccol = colN
-    ufg[4]=colN
-setCol(0)
+md = mode.define
+sel = pygame.Rect(0,0,1,1)
+SEL = pygame.Rect(0,0,fsz[0],fsz[1])
+def chngSEL():
+    global SEL
+    SEL.x,SEL.y = sel.x*fsz[0],sel.y*fsz[1]
+    SEL.width,SEL.height = sel.width*fsz[0],sel.height*fsz[1]
+clock = pygame.time.Clock()
 while True:
-    scr.fill((0,0,0))
-    for x,i in enumerate(UI):
-        cpos = ((x)*fsz[0],(0)*fsz[1])
-        fg,bg = fgbg(colors[ufg[x]],x)
-        tx = font.render(i,True,fg,bg)
-        scr.blit(tx,cpos)
-    for x,r in enumerate(content):
-        for y,i in enumerate(r):
-            cpos = ((x)*fsz[0],(y+1)*fsz[1])
-            tx = font.render(i,True,colors[cfg[x][y]],colors[cbg[x][y]])
-            scr.blit(tx,cpos)
-    cpos = (curp[0]*fsz[0],(curp[1]+1)*fsz[1])
-    tx = font.render("_",True,colors[cfg[x][y]])
-    scr.blit(tx,cpos)
+    clock.tick(30)
+    pygame.display.set_caption(f"fps:{str(clock.get_fps())}")
+    if md == mode.build:
+        pass
+        #build.build(content,cfg,cbg)
+        #md = 6
+    scr.fill((17,17,17))
+    if md == mode.define:
+        scr.fill((0,0,255),SEL)
+        
+
+    for i in content:
+        scr.fill(colors[i.color],i.rectE)
+        pygame.draw.rect(scr,(255,255,255),i.rectE,2)
+
     
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             sys.exit()
-        if e.type == pygame.KEYDOWN:
+        elif e.type == pygame.MOUSEBUTTONDOWN:
+            pass
+
+        elif e.type == pygame.KEYDOWN:
+            
             if md == mode.text:
                 if e.key == pygame.K_BACKSPACE:
-                    curp = posWrap(curp,-1)
-                    content[curp[0]][curp[1]] = " "
-                elif e.key == pygame.K_LEFT: curp = posWrap(curp,-1)
-                elif e.key == pygame.K_RIGHT: curp = posWrap(curp,1)
-                elif e.key == pygame.K_UP: curp = posWrap(curp,0,-1)
-                elif e.key == pygame.K_DOWN: curp = posWrap(curp,0,1)
-                elif e.key == pygame.K_RETURN: curp = returnLn(curp)
+                    pass
+                elif e.key == pygame.K_LEFT:pass
+                elif e.key == pygame.K_RIGHT:pass
+                elif e.key == pygame.K_UP:pass
+                elif e.key == pygame.K_DOWN:pass
+                elif e.key == pygame.K_RETURN:pass
                 else:
-                    content[curp[0]][curp[1]] = e.unicode
-                    curp = posWrap(curp,1)
+                    if e.unicode:
+                        if ord(e.unicode):
+                            pass
+            elif md in (mode.fg,mode.bg):
+                if e.key == pygame.K_LEFT:pass
+                elif e.key == pygame.K_RIGHT:pass
+                elif e.key == pygame.K_UP:pass
+                elif e.key == pygame.K_DOWN:pass
+                elif e.key == pygame.K_RETURN:pass
+                elif e.key == pygame.K_EQUALS:pass
+                elif e.key == pygame.K_MINUS:pass
+                else:
+                    if md == mode.fg:
+                        pass
+                    else:
+                        pass
+                    
+            elif md == mode.define:
+                if e.mod & pygame.KMOD_SHIFT:
+                    
+                    if e.key == pygame.K_LEFT: sel.width-=1
+                    elif e.key == pygame.K_RIGHT: sel.width+=1
+                    elif e.key == pygame.K_UP: sel.height-=1
+                    elif e.key == pygame.K_DOWN: sel.height+=1
+                    chngSEL()
+                else:
+                    if e.key == pygame.K_RETURN:
+                        content.append(elements.element(sel.copy()))
+                        sel = pygame.Rect(0,0,1,1)
+                    elif e.key == pygame.K_LEFT: sel.x-=1
+                    elif e.key == pygame.K_RIGHT: sel.x+=1
+                    elif e.key == pygame.K_UP: sel.y-=1
+                    elif e.key == pygame.K_DOWN: sel.y+=1
+                    chngSEL()
+
+
     pygame.display.flip()
