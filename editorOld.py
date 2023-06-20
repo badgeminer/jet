@@ -1,4 +1,10 @@
-import pygame,sys,enum,build
+import enum
+import sys
+
+import pygame
+
+import build
+
 pygame.init()
 
 font  = pygame.font.Font("SpaceMono-Regular.ttf",15)
