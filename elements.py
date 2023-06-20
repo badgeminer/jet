@@ -24,6 +24,7 @@ colors = [
     (17, 17, 17)
 ]
 
+
 def chngSEL(SEL,sel):
     SEL.x,SEL.y = sel.x*fsz[0],sel.y*fsz[1]
     SEL.width,SEL.height = sel.width*fsz[0],sel.height*fsz[1]
