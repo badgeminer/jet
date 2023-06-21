@@ -4,7 +4,7 @@ import sys
 import pygame
 import pygame_menu
 
-import build
+import build,pickle
 import elements
 
 pygame.init()
@@ -33,6 +33,7 @@ class mode(enum.IntEnum):
     define = 2
     build=3
     code=4
+    save=5
 class UImode(enum.IntEnum):
     text=1
     fg=2
@@ -56,7 +57,11 @@ def colorBG(selected_value, color, **kwargs):
 clock = pygame.time.Clock()
 btmBar = pygame.Rect(0,sz[1]-fsz[1],sz[0],fsz[1])
 elements.btmBar =sz[1]-fsz[1]
-tools = [elements.tool('»',mode.build,0),elements.tool("±",mode.define,1),elements.tool("¶",mode.edit,2),elements.tool("‡",mode.code,3)]
+tools = [
+        elements.tool('»',mode.build,0),elements.tool("±",mode.define,1),
+        elements.tool("¶",mode.edit,2), elements.tool("‡",mode.code,3), 
+        elements.tool("S",mode.save,4)
+]
 selelemtype = 0
 selElem = -1
 def conf(ln):
